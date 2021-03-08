@@ -9,10 +9,19 @@ services:
     environment:
       - discovery.type=single-node
   fluentd:
+    build: ./fluentd
     container_name: fluentd
-    image: fluentd:latest
     ports:
       - "24224:24224"
       - "24224:24224/udp"
     volumes:
-      - .:/fluentd/etc
+      - ./fluentd/config:/fluentd/etc
+    depends_on:
+      - elasticsearch
+  kibana:
+    image: kibana:7.10.1
+    ports:
+      - "5601:5601"
+    container_name: kibana
+    depends_on:
+      - elasticsearch
