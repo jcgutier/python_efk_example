@@ -8,20 +8,35 @@ services:
       - 9300:9300
     environment:
       - discovery.type=single-node
+    healthcheck:
+      test: curl -X GET "localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s&pretty" || exit 1
+
   fluentd:
     build: ./fluentd
     container_name: fluentd
     ports:
       - "24224:24224"
       - "24224:24224/udp"
+      - "24220:24220"
     volumes:
       - ./fluentd/config:/fluentd/etc
+    healthcheck:
+      test: curl "http://localhost:24220/api/plugins.json"
     depends_on:
       - elasticsearch
+
   kibana:
     image: kibana:7.10.1
     ports:
       - "5601:5601"
     container_name: kibana
+    healthcheck:
+      test: curl "http://localhost:5601/status"
     depends_on:
       - elasticsearch
+
+  python-efk-example:
+    container_name: python-efk-example
+    build: ./python
+    depends_on:
+      - fluentd
