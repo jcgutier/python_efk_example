@@ -1,4 +1,4 @@
-version: "3.9"  # optional since v1.27.0
+version: "3"  # optional since v1.27.0
 services:
   elasticsearch:
     container_name: elasticsearch
@@ -35,8 +35,8 @@ services:
     depends_on:
       - elasticsearch
 
-  python-efk-example:
-    container_name: python-efk-example
+  log-generator:
+    container_name: python-log-generator
     build: ./python
     depends_on:
       - fluentd
